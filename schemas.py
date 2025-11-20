@@ -12,10 +12,10 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime
 
-# Example schemas (replace with your own):
-
+# Example schemas (you can keep using these if needed)
 class User(BaseModel):
     """
     Users collection schema
@@ -34,15 +34,29 @@ class Product(BaseModel):
     """
     title: str = Field(..., description="Product title")
     description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
+    price: float = Field(..., ge=0, description="Price in euros")
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Green'Bee domain models
+class Ride(BaseModel):
+    """Represents a ride booking"""
+    pickup: str
+    dropoff: str
+    distance_km: float = Field(..., ge=0)
+    passengers: int = Field(1, ge=1, le=6)
+    price_eur: float = Field(..., ge=0)
+    co2_saved_kg: float = Field(..., ge=0)
+    status: str = Field("confirmed", description="confirmed | completed | canceled")
+    driver_name: Optional[str] = None
+    vehicle: Optional[str] = None
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Kpi(BaseModel):
+    """High-level KPI values for dashboards"""
+    total_rides: int
+    monthly_rides: int
+    avg_rating: float
+    total_co2_saved_kg: float
+    beeps_points: int
+    trend: List[float] = []
+    updated_at: Optional[datetime] = None
